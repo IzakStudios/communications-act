@@ -25,6 +25,12 @@ class DebugLib {
     };
 }
 
+
+const createPopup = async (Title, Description) => {
+    const popupPanel = docmuent.getElementById("popup-panel")
+
+};
+
 class QuizLib {
     constructor(questions){
         this.questions = questions;
@@ -39,13 +45,13 @@ class QuizLib {
     };
     answerQuestion(questionIndex) {
         let questionData = this.questions[questionIndex];
-        if (questionData["isAnswered"]){
+        if (questionData["isAnswered"]){ // If the question is already answered.
             window.alert("You've already answered this question!");
             return;
         };
 
         let userAnswer = window.prompt(questionData["content"], "");
-        if (!userAnswer) return;
+        if (!userAnswer) return; // If the user inputs nothing.
 
         let isCorrect = this.checkAnswer(questionData["answer"], userAnswer.toLowerCase())
 
@@ -93,11 +99,18 @@ const loadQuiz = async () => {
             "content": "What is the opposite of 'Goodbye'?",
 
             "answer": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
-        }
+        },
+        {
+            "question": "Question 1",
+            "content": "What is the opposite of 'Goodbye'?",
+
+            "answer": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+        },
     ])
 
     Quiz.questions.forEach(async (question, index) => {
         let element = document.createElement("button");
+        element.classList.add("quiz-button");
         element.textContent = question["question"];
         
         element.addEventListener("click", async () => {

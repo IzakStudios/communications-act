@@ -48,8 +48,7 @@ html, body {
 /* Content */
 
 .content {
-    position: absolute;
-    display: inline;
+    position: relative;
     width: 100%;
     height: 100%;
 }
@@ -70,15 +69,141 @@ html, body {
 }
 
 .content p1 {
-    position: relative;
+    position: absolute;
     font-family: "Poppins";
     font-weight: 500;
+    width: 70%;
+    left: 50%;
+    transform: translateX(-50%);
     font-size: 12px;
 }
 
-.quiz {
-    position: absolute;
+/* Popup */
+
+.popup {
+    position: fixed;
     display: inline;
     width: 100%;
     height: 100%;
+    background: #0007;
+    z-index: 5;
+}
+
+.popup-panel {
+    position: absolute;
+    height: 500px;
+    aspect-ratio: 4/5;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 0 25px 2px #000;
+}
+
+.popup-panel h1 {
+    font-family: "Fredoka One";
+    font-weight: 1000;
+    position: absolute;
+    aspect-ratio: 4/5;
+    transform: translate(-20%, -50%);
+    rotate: -4deg;
+    font-size: 45px;
+    color: #000;
+    -webkit-text-stroke: 1px #000;
+    -webkit-text-fill-color: #fff;
+}
+
+.popup-panel h2 {
+    font-family: "Poppins";
+    font-weight: 1000;
+    position: absolute;
+    width: 100%;
+    height: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 35px;
+    color: #000;
+    text-align: center;
+}
+
+.popup-panel p1 {
+    font-family: "Poppins";
+    font-weight: 1000;
+    position: absolute;
+    width: 100%;
+    height: 60%;
+    left: 50%;
+    top: 20%;
+    transform: translateX(-50%);
+    font-size: 25px;
+    color: #000;
+    text-align: center;
+}
+
+.popup-panel button {
+    font-family: "Poppins";
+    font-weight: 1000;
+    position: relative;
+    width: 40%;
+    aspect-ratio: 7/2;
+    border-radius: 15px;
+    left: 50%;
+    top: 80%;
+    transform: translateX(-50%);
+    font-size: 25px;
+    color: #000;
+    text-align: center;
+    transition: all 0.5s ease-out;
+}
+
+.popup-panel button:hover {
+    transition: all 0.5s ease-out;
+    box-shadow: 0 0 10px 0 #000;
+}
+
+.popup-panel button:active {
+    transition: all 0.25s ease-out;
+    box-shadow: 0 0 5px 0 #000;
+}
+
+/* Quiz */
+
+.quiz-header {
+    position: relative;
+    width: 100%;
+    height: 28px;
+    color: #000;
+    font-family: "Poppins";
+    font-weight: 600;
+    font-size: 25px;
+    align-content: center;
+    text-align: center;
+    padding: 0, 0;
+    left: 50%;
+    bottom: 40%;
+    transform: translateX(-50%);
+}
+
+.quiz {
+    position: relative;
+    display: inline;
+    width: 40%;
+    height: 100%;
+    left: 50%;
+    bottom: 40%;
+    transform: translateX(-50%);
+    vertical-align: middle;
+}
+
+.quiz-button {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 10%;
+    aspect-ratio: 5/1;
+    border-radius: 50vh;
+    margin-top: 5px;
+    transform: translateX(-50%);
 }

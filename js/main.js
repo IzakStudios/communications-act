@@ -37,7 +37,7 @@ class QuizLib {
         this.answers = new Array(questions.length, false);
     };
 
-    hashAnswer(answer){
+    hashAnswer(answer){ // For creating the questions.
         return String(CryptoJS.SHA256(answer));
     };
     checkAnswer(hashedAnswer, inputtedAnswer) {

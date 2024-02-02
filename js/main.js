@@ -26,7 +26,7 @@ class DebugLib {
 }
 
 
-const createPopup = async (Title, Description) => {
+const createPopup = async (title, description) => {
     const popupPanel = docmuent.getElementById("popup-panel")
 
 };

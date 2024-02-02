@@ -87,6 +87,7 @@ html, body {
     height: 100%;
     background: #0007;
     z-index: 5;
+    
 }
 
 .popup-panel {
@@ -154,7 +155,6 @@ html, body {
     font-size: 25px;
     color: #000;
     text-align: center;
-    transition: all 0.5s ease-out;
 }
 
 .popup-panel button:hover {
@@ -163,7 +163,7 @@ html, body {
 }
 
 .popup-panel button:active {
-    transition: all 0.25s ease-out;
+    transition: all 0.05s ease-out;
     box-shadow: 0 0 5px 0 #000;
 }
 
@@ -181,19 +181,17 @@ html, body {
     text-align: center;
     padding: 0, 0;
     left: 50%;
-    bottom: 40%;
     transform: translateX(-50%);
 }
 
 .quiz {
     position: relative;
-    display: inline;
     width: 40%;
     height: 100%;
     left: 50%;
-    bottom: 40%;
     transform: translateX(-50%);
     vertical-align: middle;
+    z-index: 4;
 }
 
 .quiz-button {
@@ -201,9 +199,10 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 10%;
+    height: 30px;
     aspect-ratio: 5/1;
     border-radius: 50vh;
     margin-top: 5px;
+    left: 50%;
     transform: translateX(-50%);
 }

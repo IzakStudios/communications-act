@@ -26,9 +26,42 @@ class DebugLib {
 }
 
 
-const createPopup = async (title, description) => {
-    const popupPanel = docmuent.getElementById("popup-panel")
+const createPopup = async (title, description, inputCallback) => {
+    const popupElement = document.getElementById("popup");
+    const popupPanel = document.getElementById("popup-panel");
 
+    popupElement.style = "opacity: 1;"
+
+    popupPanel.getElementsByTagName("h2")[0].textContent = title;
+    popupPanel.getElementsByTagName("p1")[0].textContent = description;
+
+    popupPanel.getElementsByTagName("input")[0].style = "opacity: 0; pointer-events: none; transition: 0s" 
+    popupPanel.getElementsByTagName("button")[0].style = "" 
+
+    if (!inputCallback) return;
+
+    popupPanel.getElementsByTagName("button")[0].style = "opacity: 0; pointer-events: none;" 
+    
+    var hasEntered = false;
+    
+    popupPanel.getElementsByTagName("input")[0].value = "";
+    popupPanel.getElementsByTagName("input")[0].style = "opacity: 1;"
+
+    popupPanel.getElementsByTagName("input")[0].addEventListener("keyup", async eventInfo => { // memory leak, will fix later but i gtg 🔥
+        eventInfo.preventDefault();
+
+        if (eventInfo.keyCode === 13) {
+            popupElement.style = "opacity: 0; pointer-events: none;"
+            hasEntered = true;
+        }
+    });
+
+    await (async() => {
+        while(!hasEntered)
+            await new Promise(resolve => setTimeout(resolve, 1));
+    })();
+
+    return popupPanel.getElementsByTagName("input")[0].value;
 };
 
 class QuizLib {
@@ -40,26 +73,30 @@ class QuizLib {
     hashAnswer(answer){ // For creating the questions.
         return String(CryptoJS.SHA256(answer));
     };
+
     checkAnswer(hashedAnswer, inputtedAnswer) {
         return String(CryptoJS.SHA256(inputtedAnswer)) === hashedAnswer;
     };
-    answerQuestion(questionIndex) {
+    
+    async answerQuestion(questionIndex) {
         let questionData = this.questions[questionIndex];
         if (questionData["isAnswered"]){ // If the question is already answered.
-            window.alert("You've already answered this question!");
+            createPopup(questionData["question"], "You've already answered this question!");
             return;
         };
 
-        let userAnswer = window.prompt(questionData["content"], "");
+        let userAnswer = await createPopup(questionData["question"], questionData["content"], true);
+        console.log(userAnswer);
         if (!userAnswer) return; // If the user inputs nothing.
 
         let isCorrect = this.checkAnswer(questionData["answer"], userAnswer.toLowerCase())
 
         if (isCorrect === false){
-            window.alert("Incorrect Answer!");
+            createPopup("Uh Oh!", "You got this question incorrect!");
             return;
         };
 
+        createPopup("Congrats!", "You got this question correct!");
         questionData["isAnswered"] = true;
     };
 }
@@ -100,12 +137,6 @@ const loadQuiz = async () => {
 
             "answer": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
         },
-        {
-            "question": "Question 1",
-            "content": "What is the opposite of 'Goodbye'?",
-
-            "answer": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
-        },
     ])
 
     Quiz.questions.forEach(async (question, index) => {
@@ -138,9 +169,30 @@ const loadContent = async () => {
     Debug.success("Content Loaded!")
 };
 
+const loadPopup = async () => {
+    Debug.progress("Loading Popup...")
+
+    var popupElement = document.getElementById("popup");
+    var popupPanel = document.getElementById("popup-panel");
+
+    if (!popupPanel) {
+        Debug.error("'popup-panel' element not found!");
+        return;
+    };
+
+    popupPanel.getElementsByTagName("button")[0].addEventListener("click", async () => {
+        popupElement.style = "opacity: 0; pointer-events: none;" 
+    })
+
+    popupElement.style = "opacity: 0; pointer-events: none;"
+
+    Debug.success("Popup Loaded!")
+};
+
 const onWindowLoad = async () => {
     loadQuiz(); Debug.space();
     loadContent(); Debug.space();
+    loadPopup(); Debug.space();
 };
 
 if (document.readyState === "complete" || document.readyState === "interactive") { onWindowLoad() }

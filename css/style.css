@@ -50,7 +50,6 @@ html, body {
 .content {
     position: relative;
     width: 100%;
-    height: 100%;
 }
 
 .content h1 {
@@ -69,10 +68,11 @@ html, body {
 }
 
 .content p1 {
-    position: absolute;
+    position: relative;
+    display: flex;
     font-family: "Poppins";
     font-weight: 500;
-    width: 70%;
+    width: 60%;
     left: 50%;
     transform: translateX(-50%);
     font-size: 12px;
@@ -136,6 +136,21 @@ html, body {
     height: 60%;
     left: 50%;
     top: 20%;
+    transform: translateX(-50%);
+    font-size: 25px;
+    color: #000;
+    text-align: center;
+}
+
+.popup-panel input {
+    font-family: "Poppins";
+    font-weight: 1000;
+    position: absolute;
+    width: 80%;
+    aspect-ratio: 12/1;
+    border-radius: 15px;
+    left: 50%;
+    top: 80%;
     transform: translateX(-50%);
     font-size: 25px;
     color: #000;

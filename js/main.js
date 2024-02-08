@@ -38,7 +38,10 @@ const createPopup = async (title, description, inputCallback) => {
     popupPanel.getElementsByTagName("input")[0].style = "opacity: 0; pointer-events: none; transition: 0s" 
     popupPanel.getElementsByTagName("button")[0].style = "" 
 
-    if (!inputCallback) return;
+    if (!inputCallback) {
+        popupPanel.getElementsByTagName("button")[0].focus();
+        return;
+    }
 
     popupPanel.getElementsByTagName("button")[0].style = "opacity: 0; pointer-events: none;" 
     
@@ -54,11 +57,12 @@ const createPopup = async (title, description, inputCallback) => {
             popupElement.style = "opacity: 0; pointer-events: none;"
             hasEntered = true;
 
-            popupPanel.getElementsByTagName("input")[0].removeEventListener("keyup", answerQuestion, true)
+            popupPanel.getElementsByTagName("input")[0].removeEventListener("keyup", answerQuestion, true);
         }
     }
     
     popupPanel.getElementsByTagName("input")[0].addEventListener("keyup", answerQuestion, true);
+    popupPanel.getElementsByTagName("input")[0].focus();
 
     await (async() => {
         while(!hasEntered)
@@ -68,10 +72,159 @@ const createPopup = async (title, description, inputCallback) => {
     return popupPanel.getElementsByTagName("input")[0].value;
 };
 
+const confettiParticles = async () => {
+    let emitter = await tsParticles.load({
+        id: "particles",
+        options: {
+            "fpsLimit": 240,
+            "fullScreen": {
+                "zIndex": 1
+            },
+            "emitters": {
+                "autoPlay": false,
+                "name": "confetti",
+                "position": {
+                    "x": 50,
+                    "y": 100
+                },
+                "rate": {
+                    "quantity": {
+                        "min": 50,
+                        "max": 100,
+                    },
+                    "delay": {
+                        "min": 0.02,
+                        "max": 0.05,
+                    }
+                }
+            },
+            "particles": {
+                "color": {
+                    "value": [
+                        "#FF0000",
+                        "#FFFF00",
+                        "#00FF00",
+                        "#00FFFF",
+                        "#0000FF",
+                        "#FF00FF",
+                    ]
+                },
+                "move": {
+                    "decay": {
+                        "min": 0.02,
+                        "max": 0.05,
+                    },
+                    "direction": "top",
+                    "enable": true,
+                    "gravity": {
+                        "enable": true
+                    },
+                    "outModes": {
+                        "top": "none",
+                        "default": "destroy"
+                    },
+                    "speed": {
+                        "min": 50,
+                        "max": 100
+                    }
+                },
+                "number": {
+                    "value": 0
+                },
+                "opacity": {
+                    "value": 1
+                },
+                "rotate": {
+                    "value": {
+                        "min": 0,
+                        "max": 360
+                    },
+                    "direction": "random",
+                    "animation": {
+                        "enable": true,
+                        "speed": 30
+                    }
+                },
+                "tilt": {
+                    "direction": "random",
+                    "enable": true,
+                    "value": {
+                        "min": 0,
+                        "max": 360
+                    },
+                    "animation": {
+                        "enable": true,
+                        "speed": 30
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "animation": {
+                        "enable": true,
+                        "startValue": "min",
+                        "count": 1,
+                        "speed": 16,
+                        "sync": true
+                    }
+                },
+                "roll": {
+                    "darken": {
+                        "enable": true,
+                        "value": 25
+                    },
+                    "enlighten": {
+                        "enable": true,
+                        "value": 25
+                    },
+                    "enable": true,
+                    "speed": {
+                        "min": 5,
+                        "max": 15
+                    }
+                },
+                "wobble": {
+                    "distance": 30,
+                    "enable": true,
+                    "speed": {
+                        "min": -7,
+                        "max": 7
+                    }
+                },
+                "shape": {
+                    "type": [
+                        "circle",
+                        "square"
+                    ],
+                    "options": {}
+                }
+            },
+            "responsive": [{
+                "maxWidth": 1024,
+                "options": {
+                    "particles": {
+                        "move": {
+                            "speed": {
+                                "min": 33,
+                                "max": 66
+                            }
+                        }
+                    }
+                }
+            }]
+        }
+    });
+
+    emitter.playEmitter("confetti");
+    setTimeout(() => {emitter.pauseEmitter("confetti")}, 100);
+}
+
 class QuizLib {
     constructor(questions){
         this.questions = questions;
         this.answers = new Array(questions.length, false);
+
+        this.questionsAnswered = 0;
+        this.binds = [];
     };
 
     hashAnswer(answer){ // For creating the questions.
@@ -82,16 +235,30 @@ class QuizLib {
         return String(CryptoJS.SHA256(inputtedAnswer)) === hashedAnswer;
     };
     
+    bindToQuestion(index, element) {
+        this.binds[index] = element;
+    };
+
     async answerQuestion(questionIndex) {
         let questionData = this.questions[questionIndex];
-        if (questionData["isAnswered"]){ // If the question is already answered.
+        
+        if (this.questionsAnswered == this.questions.length){
+            createPopup(questionData["question"], "You've already finished the quiz!");
+            return;
+        };
+
+        if (questionIndex > this.questionsAnswered){
+            createPopup("Slow Down!", "Please answer the previous questions first!");
+            return;
+        };
+
+        if (questionData["isAnswered"]){
             createPopup(questionData["question"], "You've already answered this question!");
             return;
         };
 
         let userAnswer = await createPopup(questionData["question"], questionData["content"], true);
-        console.log(userAnswer);
-        if (!userAnswer) return; // If the user inputs nothing.
+        if (!userAnswer) return;
 
         let isCorrect = this.checkAnswer(questionData["answer"], userAnswer.toLowerCase())
 
@@ -100,8 +267,34 @@ class QuizLib {
             return;
         };
 
-        createPopup("Congrats!", "You got this question correct!");
+        this.questionsAnswered++;
+
+        if (this.questionsAnswered == this.questions.length){
+            createPopup("Congrats!", "You've finished the quiz!");
+            confettiParticles();
+        } else {
+            createPopup("Congrats!", "You got this question correct!");
+        };
+
         questionData["isAnswered"] = true;
+
+        if (this.binds[questionIndex]){
+            this.binds[questionIndex].textContent = questionData["question"] + " ✅"
+        }
+
+        this.binds.forEach((element, index) => {
+            let data = this.questions[index];
+
+            if (index > this.questionsAnswered){
+                element.textContent = data.question + " 🔒"
+            } else {
+                if (!data.isAnswered) {
+                    element.textContent = data.question + " ❓"
+                } else {
+                    element.textContent = data.question + " ✅"
+                }
+            }
+        })
     };
 }
 
@@ -136,29 +329,35 @@ const loadQuiz = async () => {
     
     var Quiz = new QuizLib([
         {
-            "question": "Template Question",
-            "content": "What is the opposite of 'Goodbye'?",
+            "question": "Question 1",
+            "content": "What year was the act enforced?",
 
-            "answer": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+            "answer": "77459b9b941bcb4714d0c121313c900ecf30541d158eb2b9b178cdb8eca6457e",
         },
         {
-            "question": "Template Question",
-            "content": "What is the opposite of 'Goodbye'?",
+            "question": "Question 2",
+            "content": "Who was introduced as the new regulator?",
 
-            "answer": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
-        }
+            "answer": "f8812df5b31cb4355f91e551377020e7457a6c3cc440306b22147336697679de",
+        },
     ])
 
     Quiz.questions.forEach(async (question, index) => {
         let element = document.createElement("button");
+
         element.classList.add("quiz-button");
-        element.textContent = question["question"];
+        element.textContent = question.question + " ❓";
         
+        if (index > 0) {
+            element.textContent = question.question + " 🔒"
+        }
+
         element.addEventListener("click", async () => {
             Quiz.answerQuestion(index);
         });
 
         quizElement.appendChild(element);
+        Quiz.bindToQuestion(index, element);
     })
     
     Debug.success("Quiz Loaded!")

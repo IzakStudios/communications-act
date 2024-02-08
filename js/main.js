@@ -47,12 +47,13 @@ const createPopup = async (title, description, inputCallback) => {
     popupPanel.getElementsByTagName("input")[0].value = "";
     popupPanel.getElementsByTagName("input")[0].style = "opacity: 1;"
 
-    var answerQuestion = async (eventInfo) => { // memory leak, will fix later but i gtg 🔥
+    var answerQuestion = async (eventInfo) => { // memory leak, will fix later but i gtg 🔥 (I FIXED IT)
         eventInfo.preventDefault();
 
         if (eventInfo.keyCode === 13) {
             popupElement.style = "opacity: 0; pointer-events: none;"
             hasEntered = true;
+
             popupPanel.getElementsByTagName("input")[0].removeEventListener("keyup", answerQuestion, true)
         }
     }
@@ -140,6 +141,12 @@ const loadQuiz = async () => {
 
             "answer": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
         },
+        {
+            "question": "Template Question",
+            "content": "What is the opposite of 'Goodbye'?",
+
+            "answer": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+        }
     ])
 
     Quiz.questions.forEach(async (question, index) => {

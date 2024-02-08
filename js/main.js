@@ -47,14 +47,17 @@ const createPopup = async (title, description, inputCallback) => {
     popupPanel.getElementsByTagName("input")[0].value = "";
     popupPanel.getElementsByTagName("input")[0].style = "opacity: 1;"
 
-    popupPanel.getElementsByTagName("input")[0].addEventListener("keyup", async eventInfo => { // memory leak, will fix later but i gtg 🔥
+    var answerQuestion = async (eventInfo) => { // memory leak, will fix later but i gtg 🔥
         eventInfo.preventDefault();
 
         if (eventInfo.keyCode === 13) {
             popupElement.style = "opacity: 0; pointer-events: none;"
             hasEntered = true;
+            popupPanel.getElementsByTagName("input")[0].removeEventListener("keyup", answerQuestion, true)
         }
-    });
+    }
+    
+    popupPanel.getElementsByTagName("input")[0].addEventListener("keyup", answerQuestion, true);
 
     await (async() => {
         while(!hasEntered)
